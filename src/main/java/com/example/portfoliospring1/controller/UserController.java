@@ -1,9 +1,13 @@
 package com.example.portfoliospring1.controller;
 
+import com.example.portfoliospring1.controller.response.BaseResponse;
+import com.example.portfoliospring1.domain.dto.UserDto;
 import com.example.portfoliospring1.domain.dto.request.AddUserDto;
 import com.example.portfoliospring1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -11,13 +15,17 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/get-user")
-    public String getUser(@RequestParam String name) {
-        return userService.getUser();
+    public BaseResponse<UserDto> getUser(@RequestParam String nickname) {
+        return new BaseResponse<>(userService.getUser(nickname));
     }
 
-    @PostMapping("/add-User")
-    public String addUser(@RequestBody AddUserDto addUserDto) {
-        return userService.addUser(addUserDto);
+    @GetMapping("/get-users")
+    public BaseResponse<List<UserDto>> getUser() {
+        return new BaseResponse<>(userService.getUsers());
     }
 
+    @PostMapping("/add-user")
+    public BaseResponse addUser(@RequestBody AddUserDto addUserDto) {
+        return new BaseResponse<>(userService.addUser(addUserDto));
+    }
 }
