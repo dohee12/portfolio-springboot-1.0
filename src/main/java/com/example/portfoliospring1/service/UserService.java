@@ -3,12 +3,16 @@ package com.example.portfoliospring1.service;
 import com.example.portfoliospring1.Util.JwtUtil;
 import com.example.portfoliospring1.controller.response.BaseException;
 import com.example.portfoliospring1.controller.response.BaseResponseStatusEnum;
+import com.example.portfoliospring1.domain.dto.LoginByKakaoDto;
 import com.example.portfoliospring1.domain.dto.UserDto;
+import com.example.portfoliospring1.domain.dto.infra.KauthTokenDto;
 import com.example.portfoliospring1.domain.dto.request.AddUserDto;
 import com.example.portfoliospring1.domain.dto.request.LoginByEmailDto;
 import com.example.portfoliospring1.domain.entity.User;
+import com.example.portfoliospring1.infra.feign.KauthFeignClient;
 import com.example.portfoliospring1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +24,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
+
+    @Value("${kakao.api}")
+    private String KAKAO_API_KEY;
+    @Value("${kakao.secret}")
+    private String KAKAO_SECRET_KEy;
+
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+
+    private final KauthFeignClient kauthFeignClient;
 
     public UserDto getUser(String nickname) {
         User user = userRepository.findByNickname(nickname);
@@ -33,19 +45,17 @@ public class UserService {
     }
 
     public List<UserDto> getUsers() {
-
         List<User> users = userRepository.findAll();
 
         return users.stream().map(user -> new UserDto(user)).collect(Collectors.toList());
+//        return users.stream().map(UserDto::new).collect(Collectors.toList());
     }
 
     public Long addUser(AddUserDto addUserDto) {
-        // 회원가입
-        // 1. 중복된 닉네임이면 가입 못하게
         if (!userRepository.findAllByNickname(addUserDto.getNickname()).isEmpty()) {
             throw new BaseException(BaseResponseStatusEnum.DUPLICATED_NICKNAME);
         }
-        // 2. 중복된 이메일이면 가입 못하게
+
         if (!userRepository.findAllByEmail(addUserDto.getEmail()).isEmpty()) {
             throw new BaseException(BaseResponseStatusEnum.DUPLICATED_EMAIL);
         }
@@ -79,9 +89,11 @@ public class UserService {
         return true;
     }
 
-    public String login (LoginByEmailDto loginByEmailDto) {
+    public String login(LoginByEmailDto loginByEmailDto ) {
         try {
-            User user = userRepository.findByEmailAndPassword(loginByEmailDto.getEmail(), loginByEmailDto.getPassword())
+            User user = userRepository.findByEmailAndPassword(
+                            loginByEmailDto.getEmail(), loginByEmailDto.getPassword()
+                    )
                     .orElseThrow();
             return jwtUtil.generateToken(user.getId(), user.getNickname(), user.getEmail());
 
@@ -89,4 +101,23 @@ public class UserService {
             throw new BaseException(BaseResponseStatusEnum.FAILED_LOGIN);
         }
     }
+
+    public String loginByKakao(LoginByKakaoDto loginByKakaoDto ) {
+        try {
+            KauthTokenDto kauthTokenDto = kauthFeignClient.getKakaoToken(
+                    "authorization_code",
+                    KAKAO_API_KEY,
+                    loginByKakaoDto.getOrigin() + "/login/kakao",
+                    loginByKakaoDto.getCode(),
+                    KAKAO_SECRET_KEy);
+
+            // https://kauth.kakao.com/oauth/token
+            System.out.println("잘 성공함. " + kauthTokenDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
 }

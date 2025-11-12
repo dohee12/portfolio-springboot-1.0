@@ -1,6 +1,7 @@
 package com.example.portfoliospring1.controller;
 
 import com.example.portfoliospring1.controller.response.BaseResponse;
+import com.example.portfoliospring1.domain.dto.LoginByKakaoDto;
 import com.example.portfoliospring1.domain.dto.UserDto;
 import com.example.portfoliospring1.domain.dto.request.AddUserDto;
 import com.example.portfoliospring1.domain.dto.request.LoginByEmailDto;
@@ -35,8 +36,13 @@ public class UserController {
         return new BaseResponse<>(userService.isValidNickname(nickname));
     }
 
-    @PostMapping("/login-by-email")
+    @PostMapping("/public/login-by-email")
     public BaseResponse<String> loginByEmail(@RequestBody LoginByEmailDto loginByEmailDto) {
         return new BaseResponse<>(userService.login(loginByEmailDto));
+    }
+
+    @PostMapping("/public/login-by-kakao")
+    public BaseResponse<String> loginByKaKao(@RequestBody LoginByKakaoDto loginByKakaoDto){
+        return new BaseResponse<>(userService.loginByKakao(loginByKakaoDto));
     }
 }

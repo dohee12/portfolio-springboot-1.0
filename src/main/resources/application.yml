@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name : com.mysql.cj.jdbc.Driver
-    url : jdbc:mysql//localhost:3308/portfolio?serverTimezone=Asia/Seoul
+    url : jdbc:mysql://localhost:3308/portfolio?serverTimezone=Asia/Seoul
     username: user
     password: secret
   jpa:
@@ -13,3 +13,7 @@ spring:
     show-sql : true
 jwt:
   secret: "$o0=RzD9<M&Ku[c:o#A}R^jA1Rm=Jvt1NHm*n9I[ONU"
+
+kakao:
+  api: 123
+  secret: 321
