@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 @Getter
-@JsonPropertyOrder({"code", "message", "payload"})
+@JsonPropertyOrder({"statusCode", "message", "payload"})
 public class BaseResponse<T> {
     private final int statusCode;
     private final String message;
@@ -29,4 +29,5 @@ public class BaseResponse<T> {
         this.message = baseException.getStatusEnum().getMessage();
         this.payload = (T) baseException.getStatusEnum();
     }
+
 }

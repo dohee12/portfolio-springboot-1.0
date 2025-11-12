@@ -16,7 +16,7 @@ public class ExceptionController {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(BaseException.class)
     @ResponseBody
-    public BaseResponse<?> invaildRequestHandler(BaseException exception) {
+    public BaseResponse<?> invalidRequestHandler(BaseException exception) {
         return new BaseResponse<>(exception);
     }
 }

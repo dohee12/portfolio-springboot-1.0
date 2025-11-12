@@ -29,5 +29,4 @@ public class BaseEntity {
     public void revive() {
         deleted = false;
     }
-
 }

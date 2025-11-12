@@ -3,6 +3,7 @@ package com.example.portfoliospring1.controller;
 import com.example.portfoliospring1.controller.response.BaseResponse;
 import com.example.portfoliospring1.domain.dto.UserDto;
 import com.example.portfoliospring1.domain.dto.request.AddUserDto;
+import com.example.portfoliospring1.domain.dto.request.LoginByEmailDto;
 import com.example.portfoliospring1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,17 @@ public class UserController {
     }
 
     @PostMapping("/add-user")
-    public BaseResponse addUser(@RequestBody AddUserDto addUserDto) {
+    public BaseResponse<Long> addUser(@RequestBody AddUserDto addUserDto) {
         return new BaseResponse<>(userService.addUser(addUserDto));
+    }
+
+    @GetMapping("/is-valid-nickname")
+    public BaseResponse<Boolean> isValidNickname(@RequestParam String nickname) {
+        return new BaseResponse<>(userService.isValidNickname(nickname));
+    }
+
+    @PostMapping("/login-by-email")
+    public BaseResponse<String> loginByEmail(@RequestBody LoginByEmailDto loginByEmailDto) {
+        return new BaseResponse<>(userService.login(loginByEmailDto));
     }
 }
