@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@FeignClient(name="kauth", url="http://kauth.kakao.com")
+@FeignClient(name="kauth", url="https://kauth.kakao.com")
 public interface KauthFeignClient {
     @PostMapping("/oauth/token")
     KauthTokenDto getKakaoToken(
