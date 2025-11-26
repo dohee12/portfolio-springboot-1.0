@@ -1,6 +1,7 @@
 package com.example.portfoliospring1.config.filter;
 
 import com.example.portfoliospring1.Util.JwtUtil;
+import com.example.portfoliospring1.config.auth.JwtUserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
@@ -34,13 +35,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Jws<Claims> jws = jwtUtil.parseToken(accessToken);
                 Claims body = jws.getBody();
-//                String nickname = body.get("nickname").toString();
-//                String email = body.get("email").toString();
+
+                Long userId = (body.getSubject() == null || body.getSubject().equals("null"))? null : Long.parseLong(body.getSubject());
+
+                JwtUserPrincipal principal = new JwtUserPrincipal(
+                        userId,
+                        body.get("nickname", String.class),
+                        body.get("email", String.class),
+                        body.get("providerId", String.class)
+                );
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        body.getSubject(),
+                        principal,
                         null,
-                        Collections.emptyList() // List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        Collections.emptyList()
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException e) {
